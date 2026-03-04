@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UI.h"
 #include "UIScene_SettingsOptionsMenu.h"
-#include "..\MultiPlayerLocalPlayer.h"
+#include "..\..\MultiPlayerLocalPlayer.h"
 
 #if defined(_WIN64)
 extern char g_Win64Username[17];
@@ -495,11 +495,15 @@ int UIScene_SettingsOptionsMenu::KeyboardCompleteNameCallback(LPVOID lpParam,con
 					minecraft->user->name = g_Win64UsernameW;
 				}
 
-				shared_ptr<MultiplayerLocalPlayer> localPlayer = minecraft->localplayers[pClass->m_iPad];
-				if (localPlayer != NULL)
+				int localPad = pClass->m_iPad;
+				if (localPad >= 0 && localPad < XUSER_MAX_COUNT)
 				{
-					localPlayer->name = g_Win64UsernameW;
-					localPlayer->m_displayName = g_Win64UsernameW;
+					shared_ptr<MultiplayerLocalPlayer> localPlayer = minecraft->localplayers[localPad];
+					if (localPlayer != NULL)
+					{
+						localPlayer->name = g_Win64UsernameW;
+						localPlayer->m_displayName = g_Win64UsernameW;
+					}
 				}
 
 				if (minecraft->player != NULL)
