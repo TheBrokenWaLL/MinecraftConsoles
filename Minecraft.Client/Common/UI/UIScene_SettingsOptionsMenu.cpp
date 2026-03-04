@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI.h"
 #include "UIScene_SettingsOptionsMenu.h"
+#include "..\MultiPlayerLocalPlayer.h"
 
 #if defined(_WIN64)
 extern char g_Win64Username[17];
@@ -485,6 +486,29 @@ int UIScene_SettingsOptionsMenu::KeyboardCompleteNameCallback(LPVOID lpParam,con
 		{
 			strncpy_s(g_Win64Username, sizeof(g_Win64Username), newName, _TRUNCATE);
 			MultiByteToWideChar(CP_ACP, 0, g_Win64Username, -1, g_Win64UsernameW, 17);
+
+			Minecraft *minecraft = Minecraft::GetInstance();
+			if (minecraft != NULL)
+			{
+				if (minecraft->user != NULL)
+				{
+					minecraft->user->name = g_Win64UsernameW;
+				}
+
+				shared_ptr<MultiplayerLocalPlayer> localPlayer = minecraft->localplayers[pClass->m_iPad];
+				if (localPlayer != NULL)
+				{
+					localPlayer->name = g_Win64UsernameW;
+					localPlayer->m_displayName = g_Win64UsernameW;
+				}
+
+				if (minecraft->player != NULL)
+				{
+					minecraft->player->name = g_Win64UsernameW;
+					minecraft->player->m_displayName = g_Win64UsernameW;
+				}
+			}
+
 			SaveWin64UsernameToFile();
 		}
 	}
