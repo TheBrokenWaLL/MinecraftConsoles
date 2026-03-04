@@ -14,6 +14,7 @@ private:
 		eControl_ShowMashUpWorlds,
 		eControl_Autosave,
 		eControl_Languages,
+		eControl_PlayerName,
 		eControl_Difficulty
 	};
 protected:
@@ -24,14 +25,18 @@ private:
 	UIControl_CheckBox m_checkboxViewBob, m_checkboxShowHints, m_checkboxShowTooltips, m_checkboxInGameGamertags, m_checkboxMashupWorlds; // Checkboxes
 	UIControl_Slider m_sliderAutosave, m_sliderDifficulty; // Sliders
 	UIControl_Label m_labelDifficultyText; //Text
-	UIControl_Button m_buttonLanguageSelect;
+	UIControl_Button m_buttonLanguageSelect, m_buttonPlayerName;
 
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
 		UI_MAP_ELEMENT( m_checkboxViewBob, "ViewBob")
 		UI_MAP_ELEMENT( m_checkboxShowHints, "ShowHints")
 		UI_MAP_ELEMENT( m_checkboxShowTooltips, "ShowTooltips")
 		UI_MAP_ELEMENT( m_checkboxInGameGamertags, "InGameGamertags")
+#if defined(_WIN64)
+		UI_MAP_ELEMENT( m_buttonPlayerName, "ShowMashUpWorlds")
+#else
 		UI_MAP_ELEMENT( m_checkboxMashupWorlds, "ShowMashUpWorlds")
+#endif
 		UI_MAP_ELEMENT( m_sliderAutosave, "Autosave")
 		UI_MAP_ELEMENT( m_sliderDifficulty, "Difficulty")
 		UI_MAP_ELEMENT( m_labelDifficultyText, "DifficultyText")
@@ -41,6 +46,7 @@ private:
 	bool m_bNotInGame;
 	bool m_bMashUpWorldsUnhideOption;
 	bool m_bNavigateToLanguageSelector;
+	bool m_bOpenNameKeyboard;
 
 public:
 	UIScene_SettingsOptionsMenu(int iPad, void *initData, UILayer *parentLayer);
@@ -65,8 +71,10 @@ public:
 	virtual void handleReload();
 
 	virtual void handleSliderMove(F64 sliderId, F64 currentValue);
+	static int KeyboardCompleteNameCallback(LPVOID lpParam,const bool bRes);
 
 protected:
 	void setGameSettings();
+	void openNameKeyboard();
 
 };

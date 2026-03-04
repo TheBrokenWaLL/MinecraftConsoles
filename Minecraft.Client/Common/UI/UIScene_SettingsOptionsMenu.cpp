@@ -2,6 +2,12 @@
 #include "UI.h"
 #include "UIScene_SettingsOptionsMenu.h"
 
+#if defined(_WIN64)
+extern char g_Win64Username[17];
+extern wchar_t g_Win64UsernameW[17];
+extern void SaveWin64UsernameToFile();
+#endif
+
 #if defined(_XBOX_ONE)
 #define _ENABLE_LANGUAGE_SELECT
 #endif
@@ -25,6 +31,7 @@ int UIScene_SettingsOptionsMenu::m_iDifficultyTitleSettingA[4]=
 UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
 	m_bNavigateToLanguageSelector = false;
+	m_bOpenNameKeyboard = false;
 
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
@@ -37,6 +44,7 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 	m_checkboxInGameGamertags.init(IDS_IN_GAME_GAMERTAGS,eControl_InGameGamertags,(app.GetGameSettings(m_iPad,eGameSetting_GamertagsVisible)!=0));
 
 	// check if we should display the mash-up option
+#if !defined(_WIN64)
 	if(m_bNotInGame && app.GetMashupPackWorlds(m_iPad)!=0xFFFFFFFF)
 	{
 		// the mash-up option is needed
@@ -49,6 +57,9 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 		removeControl(&m_checkboxMashupWorlds, true);
 		m_bMashUpWorldsUnhideOption=false;
 	}
+#else
+	m_bMashUpWorldsUnhideOption=false;
+#endif
 
 	unsigned char ucValue=app.GetGameSettings(m_iPad,eGameSetting_Autosave);
 
@@ -149,6 +160,12 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 	removeControl( &m_buttonLanguageSelect, false );
 #endif
 
+#if defined(_WIN64)
+	wchar_t playerNameLabel[96];
+	swprintf(playerNameLabel, 96, L"Player Name: %hs", g_Win64Username);
+	m_buttonPlayerName.init(playerNameLabel, eControl_PlayerName);
+#endif
+
 	doHorizontalResizeCheck();
 
 	if(app.GetLocalPlayerCount()>1)
@@ -168,6 +185,12 @@ UIScene_SettingsOptionsMenu::~UIScene_SettingsOptionsMenu()
 void UIScene_SettingsOptionsMenu::tick()
 {
 	UIScene::tick();
+
+	if (m_bOpenNameKeyboard)
+	{
+		m_bOpenNameKeyboard = false;
+		openNameKeyboard();
+	}
 
 	if (m_bNavigateToLanguageSelector)
 	{
@@ -248,12 +271,16 @@ void UIScene_SettingsOptionsMenu::handlePress(F64 controlId, F64 childId)
 	case eControl_Languages:
 		m_bNavigateToLanguageSelector = true;
 		break;
+	case eControl_PlayerName:
+		m_bOpenNameKeyboard = true;
+		break;
 	}
 }
 
 void UIScene_SettingsOptionsMenu::handleReload()
 {
 	m_bNavigateToLanguageSelector = false;
+	m_bOpenNameKeyboard = false;
 
 	m_checkboxViewBob.init(IDS_VIEW_BOBBING,eControl_ViewBob,(app.GetGameSettings(m_iPad,eGameSetting_ViewBob)!=0));
 	m_checkboxShowHints.init(IDS_HINTS,eControl_ShowHints,(app.GetGameSettings(m_iPad,eGameSetting_Hints)!=0));
@@ -261,6 +288,7 @@ void UIScene_SettingsOptionsMenu::handleReload()
 	m_checkboxInGameGamertags.init(IDS_IN_GAME_GAMERTAGS,eControl_InGameGamertags,(app.GetGameSettings(m_iPad,eGameSetting_GamertagsVisible)!=0));
 
 	// check if we should display the mash-up option
+#if !defined(_WIN64)
 	if(m_bNotInGame && app.GetMashupPackWorlds(m_iPad)!=0xFFFFFFFF)
 	{
 		// the mash-up option is needed
@@ -272,6 +300,9 @@ void UIScene_SettingsOptionsMenu::handleReload()
 		removeControl(&m_checkboxMashupWorlds, true);
 		m_bMashUpWorldsUnhideOption=false;
 	}
+#else
+	m_bMashUpWorldsUnhideOption=false;
+#endif
 
 	unsigned char ucValue=app.GetGameSettings(m_iPad,eGameSetting_Autosave);
 
@@ -373,6 +404,12 @@ void UIScene_SettingsOptionsMenu::handleReload()
 	removeControl( &m_buttonLanguageSelect, false );
 #endif
 
+#if defined(_WIN64)
+	wchar_t playerNameLabel[96];
+	swprintf(playerNameLabel, 96, L"Player Name: %hs", g_Win64Username);
+	m_buttonPlayerName.init(playerNameLabel, eControl_PlayerName);
+#endif
+
 	doHorizontalResizeCheck();
 }
 
@@ -425,4 +462,39 @@ void UIScene_SettingsOptionsMenu::setGameSettings()
 
 	// 4J-PB - don't action changes here or we might write to the profile on backing out here and then get a change in the settings all, and write again on backing out there
 	//app.CheckGameSettingsChanged(true,pInputData->UserIndex);
+}
+
+int UIScene_SettingsOptionsMenu::KeyboardCompleteNameCallback(LPVOID lpParam,const bool bRes)
+{
+	UIScene_SettingsOptionsMenu *pClass=(UIScene_SettingsOptionsMenu *)lpParam;
+
+#if defined(_WIN64)
+	if (bRes)
+	{
+		uint16_t pchText[128];
+		ZeroMemory(pchText, 128 * sizeof(uint16_t));
+		InputManager.GetText(pchText);
+
+		char newName[17] = {0};
+		WideCharToMultiByte(CP_ACP, 0, (wchar_t*)pchText, -1, newName, sizeof(newName), NULL, NULL);
+		newName[sizeof(newName) - 1] = 0;
+
+		if (newName[0] != 0)
+		{
+			strncpy_s(g_Win64Username, sizeof(g_Win64Username), newName, _TRUNCATE);
+			MultiByteToWideChar(CP_ACP, 0, g_Win64Username, -1, g_Win64UsernameW, 17);
+			SaveWin64UsernameToFile();
+		}
+	}
+#endif
+
+	pClass->handleReload();
+	return 0;
+}
+
+void UIScene_SettingsOptionsMenu::openNameKeyboard()
+{
+#if defined(_WIN64)
+	InputManager.RequestKeyboard(L"Player Name", g_Win64UsernameW, (DWORD)m_iPad, 16, &UIScene_SettingsOptionsMenu::KeyboardCompleteNameCallback, this, C_4JInput::EKeyboardMode_Default);
+#endif
 }

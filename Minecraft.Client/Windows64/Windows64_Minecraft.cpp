@@ -124,6 +124,27 @@ static void CopyWideArgToAnsi(LPCWSTR source, char* dest, size_t destSize)
 	dest[destSize - 1] = 0;
 }
 
+void SaveWin64UsernameToFile()
+{
+	char exePath[MAX_PATH] = {};
+	GetModuleFileNameA(NULL, exePath, MAX_PATH);
+	char *lastSlash = strrchr(exePath, '\\');
+	if (lastSlash)
+	{
+		*(lastSlash + 1) = '\0';
+	}
+
+	char filePath[MAX_PATH] = {};
+	_snprintf_s(filePath, sizeof(filePath), _TRUNCATE, "%susername.txt", exePath);
+
+	FILE *f = nullptr;
+	if (fopen_s(&f, filePath, "w") == 0 && f)
+	{
+		fprintf(f, "%s\n", g_Win64Username);
+		fclose(f);
+	}
+}
+
 // ---------- Persistent options (options.txt next to exe) ----------
 static void GetOptionsFilePath(char *out, size_t outSize)
 {
