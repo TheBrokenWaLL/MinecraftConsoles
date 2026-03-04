@@ -58,6 +58,7 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 		m_bMashUpWorldsUnhideOption=false;
 	}
 #else
+	removeControl(&m_checkboxMashupWorlds, true);
 	m_bMashUpWorldsUnhideOption=false;
 #endif
 
@@ -147,6 +148,11 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 	// 4J-JEV: Changing languages in-game will produce many a bug.
 	// MGH - disabled the language select for the patch build, we'll re-enable afterwards
 	// 4J Stu - Removed it with a preprocessor def as we turn this off in various places
+#if defined(_WIN64)
+	wchar_t playerNameLabel[96];
+	swprintf(playerNameLabel, 96, L"Player Name: %hs", g_Win64Username);
+	m_buttonPlayerName.init(playerNameLabel, eControl_PlayerName);
+#else
 #ifdef _ENABLE_LANGUAGE_SELECT
 	if (app.GetGameStarted())	
 	{
@@ -159,11 +165,6 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 #else
 	removeControl( &m_buttonLanguageSelect, false );
 #endif
-
-#if defined(_WIN64)
-	wchar_t playerNameLabel[96];
-	swprintf(playerNameLabel, 96, L"Player Name: %hs", g_Win64Username);
-	m_buttonPlayerName.init(playerNameLabel, eControl_PlayerName);
 #endif
 
 	doHorizontalResizeCheck();
@@ -301,6 +302,7 @@ void UIScene_SettingsOptionsMenu::handleReload()
 		m_bMashUpWorldsUnhideOption=false;
 	}
 #else
+	removeControl(&m_checkboxMashupWorlds, true);
 	m_bMashUpWorldsUnhideOption=false;
 #endif
 
@@ -391,6 +393,11 @@ void UIScene_SettingsOptionsMenu::handleReload()
 
 	// MGH - disabled the language select for the patch build, we'll re-enable afterwards
 	// 4J Stu - Removed it with a preprocessor def as we turn this off in various places
+#if defined(_WIN64)
+	wchar_t playerNameLabel[96];
+	swprintf(playerNameLabel, 96, L"Player Name: %hs", g_Win64Username);
+	m_buttonPlayerName.init(playerNameLabel, eControl_PlayerName);
+#else
 #ifdef _ENABLE_LANGUAGE_SELECT
 	// 4J-JEV: Changing languages in-game will produce many a bug.
 	if (app.GetGameStarted())	
@@ -403,11 +410,6 @@ void UIScene_SettingsOptionsMenu::handleReload()
 #else
 	removeControl( &m_buttonLanguageSelect, false );
 #endif
-
-#if defined(_WIN64)
-	wchar_t playerNameLabel[96];
-	swprintf(playerNameLabel, 96, L"Player Name: %hs", g_Win64Username);
-	m_buttonPlayerName.init(playerNameLabel, eControl_PlayerName);
 #endif
 
 	doHorizontalResizeCheck();

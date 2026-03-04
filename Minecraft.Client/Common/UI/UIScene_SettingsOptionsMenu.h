@@ -32,15 +32,15 @@ private:
 		UI_MAP_ELEMENT( m_checkboxShowHints, "ShowHints")
 		UI_MAP_ELEMENT( m_checkboxShowTooltips, "ShowTooltips")
 		UI_MAP_ELEMENT( m_checkboxInGameGamertags, "InGameGamertags")
-#if defined(_WIN64)
-		UI_MAP_ELEMENT( m_buttonPlayerName, "ShowMashUpWorlds")
-#else
 		UI_MAP_ELEMENT( m_checkboxMashupWorlds, "ShowMashUpWorlds")
-#endif
 		UI_MAP_ELEMENT( m_sliderAutosave, "Autosave")
 		UI_MAP_ELEMENT( m_sliderDifficulty, "Difficulty")
 		UI_MAP_ELEMENT( m_labelDifficultyText, "DifficultyText")
+#if defined(_WIN64)
+		UI_MAP_ELEMENT( m_buttonPlayerName, "Languages")
+#else
 		UI_MAP_ELEMENT( m_buttonLanguageSelect, "Languages")
+#endif
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 
 	bool m_bNotInGame;
