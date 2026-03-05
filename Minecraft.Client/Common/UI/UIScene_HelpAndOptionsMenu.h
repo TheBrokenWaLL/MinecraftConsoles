@@ -10,7 +10,7 @@
 #define BUTTON_HAO_REINSTALL			5
 #define BUTTON_HAO_DEBUG				6
 #define BUTTON_HAO_PLAYER				7
-#define BUTTONS_HAO_MAX			BUTTON_HAO_PLAYER + 1
+#define BUTTONS_HAO_MAX			8
 
 class UIScene_HelpAndOptionsMenu : public UIScene
 {
