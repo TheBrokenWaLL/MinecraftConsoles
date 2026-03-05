@@ -7,7 +7,9 @@ UIScene_ReinstallMenu::UIScene_ReinstallMenu(int iPad, void *initData, UILayer *
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 
-	m_buttons[eControl_Theme].init(L"Placeholder", eControl_Theme);
+	m_playerNick = Minecraft::GetInstance()->user->name;
+	if(m_playerNick.empty()) m_playerNick = ProfileManager.GetDisplayName(m_iPad);
+	m_buttons[eControl_Theme].init(m_playerNick, eControl_Theme);
 
 	removeControl( &m_buttons[eControl_Gamerpic1], false );
 	removeControl( &m_buttons[eControl_Gamerpic2], false );
@@ -37,6 +39,29 @@ wstring UIScene_ReinstallMenu::getMoviePath()
 	}
 }
 
+
+void UIScene_ReinstallMenu::updatePlaceholderButtonLabel()
+{
+	m_buttons[eControl_Theme].setLabel(m_playerNick);
+}
+
+int UIScene_ReinstallMenu::KeyboardCompleteCallback(LPVOID lpParam, bool bRes)
+{
+	UIScene_ReinstallMenu *pClass = (UIScene_ReinstallMenu *)lpParam;
+
+	if (bRes)
+	{
+		uint16_t pchText[128];
+		ZeroMemory(pchText, 128 * sizeof(uint16_t));
+		InputManager.GetText(pchText);
+
+		pClass->m_playerNick = (wchar_t *)pchText;
+		Minecraft::GetInstance()->user->name = pClass->m_playerNick;
+		pClass->updatePlaceholderButtonLabel();
+	}
+
+	return 0;
+}
 void UIScene_ReinstallMenu::updateTooltips()
 {
 	ui.SetTooltips( m_iPad, IDS_TOOLTIPS_SELECT,IDS_TOOLTIPS_BACK);
@@ -92,7 +117,7 @@ void UIScene_ReinstallMenu::handlePress(F64 controlId, F64 childId)
 	switch((int)controlId)
 	{
 	case eControl_Theme:
-		ui.PlayUISFX(eSFX_Press);
+		InputManager.RequestKeyboard(app.GetString(IDS_TITLE_RENAME), m_playerNick, (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 		break;
 	}
 }
