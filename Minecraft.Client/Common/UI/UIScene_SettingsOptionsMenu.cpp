@@ -25,6 +25,7 @@ int UIScene_SettingsOptionsMenu::m_iDifficultyTitleSettingA[4]=
 UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
 	m_bNavigateToLanguageSelector = false;
+	m_bIgnoreInput = false;
 
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
@@ -146,7 +147,7 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 		m_buttonLanguageSelect.init(IDS_LANGUAGE_SELECTOR, eControl_Languages);
 	}
 #else
-	removeControl( &m_buttonLanguageSelect, false );
+	m_buttonLanguageSelect.init(UIString(L"Nick: " + Minecraft::GetInstance()->user->name), eControl_PlayerNick);
 #endif
 
 	doHorizontalResizeCheck();
@@ -213,6 +214,8 @@ void UIScene_SettingsOptionsMenu::updateComponents()
 
 void UIScene_SettingsOptionsMenu::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)
 {
+	if (m_bIgnoreInput) return;
+
 	ui.AnimateKeyPress(iPad, key, repeat, pressed, released);
 	switch(key)
 	{
@@ -245,6 +248,10 @@ void UIScene_SettingsOptionsMenu::handlePress(F64 controlId, F64 childId)
 
 	switch((int)controlId)
 	{
+	case eControl_PlayerNick:
+		m_bIgnoreInput = true;
+		InputManager.RequestKeyboard(L"Alterar nick", Minecraft::GetInstance()->user->name.c_str(), (DWORD)m_iPad, 20, &UIScene_SettingsOptionsMenu::KeyboardCompletePlayerNickCallback, this, C_4JInput::EKeyboardMode_Default);
+		break;
 	case eControl_Languages:
 		m_bNavigateToLanguageSelector = true;
 		break;
@@ -370,10 +377,70 @@ void UIScene_SettingsOptionsMenu::handleReload()
 	{
 	}
 #else
-	removeControl( &m_buttonLanguageSelect, false );
+	updatePlayerNickButtonLabel();
 #endif
 
 	doHorizontalResizeCheck();
+}
+
+
+int UIScene_SettingsOptionsMenu::KeyboardCompletePlayerNickCallback(LPVOID lpParam,bool bRes)
+{
+	UIScene_SettingsOptionsMenu *pClass=(UIScene_SettingsOptionsMenu *)lpParam;
+	pClass->m_bIgnoreInput = false;
+
+	if (!bRes)
+	{
+		return 0;
+	}
+
+	uint16_t pchText[128];
+	ZeroMemory(pchText, 128 * sizeof(uint16_t));
+	InputManager.GetText(pchText);
+
+	wstring newNick = (wchar_t *)pchText;
+	if (newNick.empty())
+	{
+		return 0;
+	}
+
+	pClass->applyPlayerNick(newNick);
+	pClass->updatePlayerNickButtonLabel();
+	return 0;
+}
+
+void UIScene_SettingsOptionsMenu::updatePlayerNickButtonLabel()
+{
+	wstring nick = Minecraft::GetInstance()->user != NULL ? Minecraft::GetInstance()->user->name : L"";
+	m_buttonLanguageSelect.init(UIString(L"Nick: " + nick), eControl_PlayerNick);
+}
+
+void UIScene_SettingsOptionsMenu::applyPlayerNick(const wstring &newNick)
+{
+	Minecraft *minecraft = Minecraft::GetInstance();
+	if (minecraft->user != NULL)
+	{
+		minecraft->user->name = newNick;
+	}
+
+	for (int i = 0; i < XUSER_MAX_COUNT; ++i)
+	{
+		if (minecraft->localplayers[i] != NULL)
+		{
+			minecraft->localplayers[i]->name = newNick;
+#ifndef _XBOX_ONE
+			minecraft->localplayers[i]->setUUID(newNick);
+#endif
+		}
+	}
+
+	if (minecraft->player != NULL)
+	{
+		minecraft->player->name = newNick;
+#ifndef _XBOX_ONE
+		minecraft->player->setUUID(newNick);
+#endif
+	}
 }
 
 void UIScene_SettingsOptionsMenu::handleSliderMove(F64 sliderId, F64 currentValue)

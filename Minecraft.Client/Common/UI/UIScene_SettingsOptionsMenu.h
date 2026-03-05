@@ -5,7 +5,7 @@
 class UIScene_SettingsOptionsMenu : public UIScene
 {
 private:
-	enum EControls
+		enum EControls
 	{
 		eControl_ViewBob,
 		eControl_ShowHints,
@@ -13,6 +13,7 @@ private:
 		eControl_InGameGamertags,
 		eControl_ShowMashUpWorlds,
 		eControl_Autosave,
+		eControl_PlayerNick,
 		eControl_Languages,
 		eControl_Difficulty
 	};
@@ -41,6 +42,11 @@ private:
 	bool m_bNotInGame;
 	bool m_bMashUpWorldsUnhideOption;
 	bool m_bNavigateToLanguageSelector;
+	bool m_bIgnoreInput;
+
+	void updatePlayerNickButtonLabel();
+	void applyPlayerNick(const wstring &newNick);
+	static int KeyboardCompletePlayerNickCallback(LPVOID lpParam,bool bRes);
 
 public:
 	UIScene_SettingsOptionsMenu(int iPad, void *initData, UILayer *parentLayer);
