@@ -129,19 +129,21 @@ void UIScene_ReinstallMenu::handleEditNamePressed()
 	case XC_LANGUAGE_JAPANESE:
 	case XC_LANGUAGE_KOREAN:
 	case XC_LANGUAGE_TCHINESE:
-		InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+		InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 		break;
 	default:
-		InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
+		InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
 		break;
 	}
 #else
-	InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+	InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 #endif
 }
 
 void UIScene_ReinstallMenu::handlePress(F64 controlId, F64 childId)
 {
+	if(m_bIgnoreInput) return;
+
 	switch((int)controlId)
 	{
 	case eControl_Theme:
