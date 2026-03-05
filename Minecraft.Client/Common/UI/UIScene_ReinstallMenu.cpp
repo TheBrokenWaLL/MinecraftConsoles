@@ -109,9 +109,17 @@ void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pre
 #ifdef __ORBIS__
 	case ACTION_MENU_TOUCHPAD_PRESS:
 #endif
+		if(pressed && !repeat && controlHasFocus(m_buttons[eControl_Theme].getId()))
+		{
+			ui.PlayUISFX(eSFX_Press);
+			handleEditNamePressed();
+			handled = true;
+			break;
+		}
 	case ACTION_MENU_UP:
 	case ACTION_MENU_DOWN:
 		sendInputToMovie(key, repeat, pressed, released);
+		handled = true;
 		break;
 	}
 }
@@ -120,6 +128,7 @@ void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pre
 void UIScene_ReinstallMenu::handleEditNamePressed()
 {
 	m_bIgnoreInput = true;
+	EKeyboardResult result = EKeyboard_Cancelled;
 
 #ifdef _XBOX_ONE
 	// 4J-PB - Match existing keyboard language handling used by other rename flows.
@@ -129,15 +138,20 @@ void UIScene_ReinstallMenu::handleEditNamePressed()
 	case XC_LANGUAGE_JAPANESE:
 	case XC_LANGUAGE_KOREAN:
 	case XC_LANGUAGE_TCHINESE:
-		InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+		result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 		break;
 	default:
-		InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
+		result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
 		break;
 	}
 #else
-	InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+	result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 #endif
+
+	if(result != EKeyboard_Pending)
+	{
+		m_bIgnoreInput = false;
+	}
 }
 
 void UIScene_ReinstallMenu::handlePress(F64 controlId, F64 childId)
