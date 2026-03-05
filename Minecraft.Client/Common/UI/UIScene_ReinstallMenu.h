@@ -13,9 +13,9 @@ private:
 		eControl_Avatar1,
 		eControl_Avatar2,
 		eControl_Avatar3,
-		eControl_COUNT,
 	};
-	UIControl_Button m_buttons[eControl_COUNT];
+	static const int REINSTALL_BUTTON_COUNT = 6;
+	UIControl_Button m_buttons[REINSTALL_BUTTON_COUNT];
 	wstring m_playerNick;
 
 	void updatePlaceholderButtonLabel();

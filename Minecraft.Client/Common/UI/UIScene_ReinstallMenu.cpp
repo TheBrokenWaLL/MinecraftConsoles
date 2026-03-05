@@ -47,8 +47,6 @@ void UIScene_ReinstallMenu::updatePlaceholderButtonLabel()
 int UIScene_ReinstallMenu::KeyboardCompleteCallback(LPVOID lpParam, bool bRes)
 {
 	UIScene_ReinstallMenu *pClass = (UIScene_ReinstallMenu *)lpParam;
-	pClass->setIgnoreInput(false);
-
 	if (bRes)
 	{
 		uint16_t pchText[128];
@@ -114,7 +112,6 @@ void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pre
 
 void UIScene_ReinstallMenu::handleEditNamePressed()
 {
-	setIgnoreInput(true);
 #if defined(__PS3__) || defined(__ORBIS__) || defined __PSVITA__
 	int language = XGetLanguage();
 	switch(language)
