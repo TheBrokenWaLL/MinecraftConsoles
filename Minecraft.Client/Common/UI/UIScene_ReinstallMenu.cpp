@@ -109,7 +109,7 @@ void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pre
 #ifdef __ORBIS__
 	case ACTION_MENU_TOUCHPAD_PRESS:
 #endif
-		if(pressed && !repeat && controlHasFocus(m_buttons[eControl_Theme].getId()))
+		if(pressed && !repeat)
 		{
 			ui.PlayUISFX(eSFX_Press);
 			handleEditNamePressed();
@@ -138,14 +138,14 @@ void UIScene_ReinstallMenu::handleEditNamePressed()
 	case XC_LANGUAGE_JAPANESE:
 	case XC_LANGUAGE_KOREAN:
 	case XC_LANGUAGE_TCHINESE:
-		result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+		result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 		break;
 	default:
-		result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
+		result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
 		break;
 	}
 #else
-	result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)0, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+	result = InputManager.RequestKeyboard(app.GetString(IDS_CREATE_NEW_WORLD), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 #endif
 
 	if(result != EKeyboard_Pending)
