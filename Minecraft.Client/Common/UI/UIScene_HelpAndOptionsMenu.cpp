@@ -17,6 +17,7 @@ UIScene_HelpAndOptionsMenu::UIScene_HelpAndOptionsMenu(int iPad, void *initData,
 	m_buttons[BUTTON_HAO_CREDITS].init(IDS_CREDITS,BUTTON_HAO_CREDITS);
 	//m_buttons[BUTTON_HAO_REINSTALL].init(app.GetString(IDS_REINSTALL_CONTENT),BUTTON_HAO_REINSTALL);
 	m_buttons[BUTTON_HAO_DEBUG].init(IDS_DEBUG_SETTINGS,BUTTON_HAO_DEBUG);
+	m_buttons[BUTTON_HAO_PLAYER].init(UIString::CONSTANT(L"Player"),BUTTON_HAO_PLAYER);
 
 	/* 4J-TomK - we should never remove a control before the other buttons controls are initialised!
 	(because vita touchboxes are rebuilt on remove since the remaining positions might change) */
@@ -52,6 +53,12 @@ UIScene_HelpAndOptionsMenu::UIScene_HelpAndOptionsMenu(int iPad, void *initData,
 	else
 	{
 		removeControl( &m_buttons[BUTTON_HAO_REINSTALL], false);
+	}
+
+
+	if(bNotInGame)
+	{
+		removeControl( &m_buttons[BUTTON_HAO_PLAYER], false);
 	}
 
 	if(app.GetLocalPlayerCount()>1)
@@ -139,6 +146,12 @@ void UIScene_HelpAndOptionsMenu::handleReload()
 	else
 	{
 		removeControl( &m_buttons[BUTTON_HAO_REINSTALL], false);
+	}
+
+
+	if(bNotInGame)
+	{
+		removeControl( &m_buttons[BUTTON_HAO_PLAYER], false);
 	}
 
 	if(app.GetLocalPlayerCount()>1)
@@ -229,6 +242,9 @@ void UIScene_HelpAndOptionsMenu::handlePress(F64 controlId, F64 childId)
 		break;
 	case BUTTON_HAO_DEBUG:
 		ui.NavigateToScene(m_iPad, eUIScene_DebugOptions);
+		break;
+	case BUTTON_HAO_PLAYER:
+		ui.NavigateToScene(m_iPad, eUIScene_InGameInfoMenu);
 		break;
 	}
 }
