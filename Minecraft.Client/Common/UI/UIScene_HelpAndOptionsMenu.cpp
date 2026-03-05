@@ -218,7 +218,7 @@ void UIScene_HelpAndOptionsMenu::handlePress(F64 controlId, F64 childId)
 		ui.NavigateToScene(m_iPad, eUIScene_Credits);
 		break;
 	case BUTTON_HAO_REINSTALL:
-		ui.NavigateToScene(m_iPad, eUIScene_InGameInfoMenu);
+		ui.NavigateToScene(m_iPad, eUIScene_ReinstallMenu);
 		break;
 	case BUTTON_HAO_DEBUG:
 		ui.NavigateToScene(m_iPad, eUIScene_DebugOptions);

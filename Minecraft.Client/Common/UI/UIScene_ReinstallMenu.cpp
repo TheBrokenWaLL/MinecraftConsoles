@@ -7,6 +7,14 @@ UIScene_ReinstallMenu::UIScene_ReinstallMenu(int iPad, void *initData, UILayer *
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 
+	m_buttons[eControl_Theme].init(L"Placeholder", eControl_Theme);
+
+	removeControl( &m_buttons[eControl_Gamerpic1], false );
+	removeControl( &m_buttons[eControl_Gamerpic2], false );
+	removeControl( &m_buttons[eControl_Avatar1], false );
+	removeControl( &m_buttons[eControl_Avatar2], false );
+	removeControl( &m_buttons[eControl_Avatar3], false );
+
 #if TO_BE_IMPLEMENTED
 	XuiControlSetText(m_Buttons[eControl_Theme],app.GetString(IDS_REINSTALL_THEME));
 	XuiControlSetText(m_Buttons[eControl_Gamerpic1],app.GetString(IDS_REINSTALL_GAMERPIC_1));
@@ -31,7 +39,7 @@ wstring UIScene_ReinstallMenu::getMoviePath()
 
 void UIScene_ReinstallMenu::updateTooltips()
 {
-	ui.SetTooltips( m_iPad, IDS_TOOLTIPS_SELECT,IDS_TOOLTIPS_BACK,IDS_TOOLTIPS_SELECTDEVICE);
+	ui.SetTooltips( m_iPad, IDS_TOOLTIPS_SELECT,IDS_TOOLTIPS_BACK);
 }
 
 void UIScene_ReinstallMenu::updateComponents()
@@ -81,30 +89,10 @@ void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pre
 
 void UIScene_ReinstallMenu::handlePress(F64 controlId, F64 childId)
 {
-#if TO_BE_IMPLEMENTED
 	switch((int)controlId)
 	{
-	case BUTTON_HAO_CHANGESKIN:
-		ui.NavigateToScene(m_iPad, eUIScene_SkinSelectMenu);
-		break;
-	case BUTTON_HAO_HOWTOPLAY:
-		ui.NavigateToScene(m_iPad, eUIScene_HowToPlayMenu);
-		break;
-	case BUTTON_HAO_CONTROLS:
-		ui.NavigateToScene(m_iPad, eUIScene_ControlsMenu);
-		break;
-	case BUTTON_HAO_SETTINGS:
-		ui.NavigateToScene(m_iPad, eUIScene_SettingsMenu);
-		break;
-	case BUTTON_HAO_CREDITS:
-		ui.NavigateToScene(m_iPad, eUIScene_Credits);
-		break;
-	case BUTTON_HAO_REINSTALL:
-		ui.NavigateToScene(m_iPad, eUIScene_ReinstallMenu);
-		break;
-	case BUTTON_HAO_DEBUG:
-		ui.NavigateToScene(m_iPad, eUIScene_DebugOptions);
+	case eControl_Theme:
+		ui.PlayUISFX(eSFX_Press);
 		break;
 	}
-#endif
 }
