@@ -20,6 +20,7 @@ private:
 
 	void updatePlaceholderButtonLabel();
 	static int KeyboardCompleteCallback(LPVOID lpParam, bool bRes);
+	void handleEditNamePressed();
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
 		UI_MAP_ELEMENT( m_buttons[eControl_Theme], "Button1")
 		UI_MAP_ELEMENT( m_buttons[eControl_Gamerpic1], "Button2")
