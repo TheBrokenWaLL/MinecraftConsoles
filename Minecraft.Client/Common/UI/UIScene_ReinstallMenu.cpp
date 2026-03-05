@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "UI.h"
+#include "Minecraft.h"
+#include "User.h"
+#include "MultiPlayerLocalPlayer.h"
 #include "UIScene_ReinstallMenu.h"
 
 UIScene_ReinstallMenu::UIScene_ReinstallMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
@@ -56,6 +59,22 @@ int UIScene_ReinstallMenu::KeyboardCompleteCallback(LPVOID lpParam, const bool b
 		InputManager.GetText(pchText);
 
 		pClass->m_playerNick = (wchar_t *)pchText;
+
+		Minecraft *pMinecraft = Minecraft::GetInstance();
+		if(pMinecraft != NULL)
+		{
+			if(pMinecraft->user != NULL)
+			{
+				pMinecraft->user->name = pClass->m_playerNick;
+			}
+
+			if(pClass->m_iPad >= 0 && pClass->m_iPad < XUSER_MAX_COUNT && pMinecraft->localplayers[pClass->m_iPad] != NULL)
+			{
+				pMinecraft->localplayers[pClass->m_iPad]->name = pClass->m_playerNick;
+				pMinecraft->localplayers[pClass->m_iPad]->m_displayName = pClass->m_playerNick;
+			}
+		}
+
 		pClass->updatePlaceholderButtonLabel();
 	}
 
