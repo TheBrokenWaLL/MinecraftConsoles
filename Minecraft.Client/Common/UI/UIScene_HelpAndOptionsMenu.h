@@ -9,8 +9,7 @@
 #define BUTTON_HAO_CREDITS				4
 #define BUTTON_HAO_REINSTALL			5
 #define BUTTON_HAO_DEBUG				6
-#define BUTTON_HAO_PLAYER				7
-#define BUTTONS_HAO_MAX			8
+#define BUTTONS_HAO_MAX			7
 
 class UIScene_HelpAndOptionsMenu : public UIScene
 {
@@ -24,7 +23,6 @@ private:
 		UI_MAP_ELEMENT( m_buttons[BUTTON_HAO_CREDITS], "Button5")
 		UI_MAP_ELEMENT( m_buttons[BUTTON_HAO_REINSTALL], "Button6")
 		UI_MAP_ELEMENT( m_buttons[BUTTON_HAO_DEBUG], "Button7")
-		UI_MAP_ELEMENT( m_buttons[BUTTON_HAO_PLAYER], "Button8")
 	UI_END_MAP_ELEMENTS_AND_NAMES()
 
 	bool m_bNotInGame;

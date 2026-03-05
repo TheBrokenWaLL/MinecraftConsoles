@@ -5,7 +5,6 @@
 #define IDC_XuiButton5 L"XuiButton5"
 #define IDC_XuiButton6 L"XuiButton6"
 #define IDC_XuiButton7 L"XuiButton7"
-#define IDC_XuiButton8 L"XuiButton8"
 #define IDC_Timer_Square_1 L"Timer_Square_1"
 #define IDC_Timer_Square_2 L"Timer_Square_2"
 #define IDC_Timer_Square_3 L"Timer_Square_3"

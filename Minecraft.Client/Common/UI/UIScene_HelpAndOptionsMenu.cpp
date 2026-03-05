@@ -15,14 +15,12 @@ UIScene_HelpAndOptionsMenu::UIScene_HelpAndOptionsMenu(int iPad, void *initData,
 	m_buttons[BUTTON_HAO_CONTROLS].init(IDS_CONTROLS,BUTTON_HAO_CONTROLS);
 	m_buttons[BUTTON_HAO_SETTINGS].init(IDS_SETTINGS,BUTTON_HAO_SETTINGS);
 	m_buttons[BUTTON_HAO_CREDITS].init(IDS_CREDITS,BUTTON_HAO_CREDITS);
-	//m_buttons[BUTTON_HAO_REINSTALL].init(app.GetString(IDS_REINSTALL_CONTENT),BUTTON_HAO_REINSTALL);
+	m_buttons[BUTTON_HAO_REINSTALL].init(IDS_PLAYERS,BUTTON_HAO_REINSTALL);
 	m_buttons[BUTTON_HAO_DEBUG].init(IDS_DEBUG_SETTINGS,BUTTON_HAO_DEBUG);
-	m_buttons[BUTTON_HAO_PLAYER].init(IDS_PLAYERS,BUTTON_HAO_PLAYER);
 
 	/* 4J-TomK - we should never remove a control before the other buttons controls are initialised!
 	(because vita touchboxes are rebuilt on remove since the remaining positions might change) */
-	// We don't have a reinstall content, so remove the button
-	removeControl( &m_buttons[BUTTON_HAO_REINSTALL], false );
+	// Button6 is repurposed as Players in this menu.
 
 #ifdef _FINAL_BUILD
 	removeControl( &m_buttons[BUTTON_HAO_DEBUG], false);
@@ -56,11 +54,6 @@ UIScene_HelpAndOptionsMenu::UIScene_HelpAndOptionsMenu(int iPad, void *initData,
 	}
 
 
-	if(bNotInGame)
-	{
-		removeControl( &m_buttons[BUTTON_HAO_PLAYER], false);
-	}
-
 	if(app.GetLocalPlayerCount()>1)
 	{
 		// no credits in splitscreen
@@ -69,10 +62,6 @@ UIScene_HelpAndOptionsMenu::UIScene_HelpAndOptionsMenu(int iPad, void *initData,
 #if TO_BE_IMPLEMENTED
 		app.AdjustSplitscreenScene(m_hObj,&m_OriginalPosition,m_iPad,false);
 #endif
-		if(ProfileManager.GetPrimaryPad()!=m_iPad)
-		{
-			removeControl( &m_buttons[BUTTON_HAO_REINSTALL], false);
-		}
 	}
 
 	if(!ProfileManager.IsFullVersion() )//|| ProfileManager.IsGuest(m_iPad))
@@ -149,11 +138,6 @@ void UIScene_HelpAndOptionsMenu::handleReload()
 	}
 
 
-	if(bNotInGame)
-	{
-		removeControl( &m_buttons[BUTTON_HAO_PLAYER], false);
-	}
-
 	if(app.GetLocalPlayerCount()>1)
 	{
 		// no credits in splitscreen
@@ -162,10 +146,6 @@ void UIScene_HelpAndOptionsMenu::handleReload()
 #if TO_BE_IMPLEMENTED
 		app.AdjustSplitscreenScene(m_hObj,&m_OriginalPosition,m_iPad,false);
 #endif
-		if(ProfileManager.GetPrimaryPad()!=m_iPad)
-		{
-			removeControl( &m_buttons[BUTTON_HAO_REINSTALL], false);
-		}
 	}
 
 	if(!ProfileManager.IsFullVersion() )//|| ProfileManager.IsGuest(m_iPad))
@@ -238,13 +218,10 @@ void UIScene_HelpAndOptionsMenu::handlePress(F64 controlId, F64 childId)
 		ui.NavigateToScene(m_iPad, eUIScene_Credits);
 		break;
 	case BUTTON_HAO_REINSTALL:
-		ui.NavigateToScene(m_iPad, eUIScene_ReinstallMenu);
+		ui.NavigateToScene(m_iPad, eUIScene_InGameInfoMenu);
 		break;
 	case BUTTON_HAO_DEBUG:
 		ui.NavigateToScene(m_iPad, eUIScene_DebugOptions);
-		break;
-	case BUTTON_HAO_PLAYER:
-		ui.NavigateToScene(m_iPad, eUIScene_InGameInfoMenu);
 		break;
 	}
 }
