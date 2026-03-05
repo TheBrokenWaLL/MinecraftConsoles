@@ -112,22 +112,8 @@ void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pre
 
 void UIScene_ReinstallMenu::handleEditNamePressed()
 {
-#if defined(__PS3__) || defined(__ORBIS__) || defined __PSVITA__
-	int language = XGetLanguage();
-	switch(language)
-	{
-	case XC_LANGUAGE_JAPANESE:
-	case XC_LANGUAGE_KOREAN:
-	case XC_LANGUAGE_TCHINESE:
-		InputManager.RequestKeyboard(app.GetString(IDS_TITLE_RENAME), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
-		break;
-	default:
-		InputManager.RequestKeyboard(app.GetString(IDS_TITLE_RENAME), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
-		break;
-	}
-#else
-	InputManager.RequestKeyboard(app.GetString(IDS_TITLE_RENAME), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
-#endif
+	// Use the same world-rename style prompt title.
+	InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
 }
 
 void UIScene_ReinstallMenu::handlePress(F64 controlId, F64 childId)
