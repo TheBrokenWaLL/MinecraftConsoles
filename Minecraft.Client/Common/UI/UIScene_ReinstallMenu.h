@@ -17,9 +17,10 @@ private:
 	static const int REINSTALL_BUTTON_COUNT = 6;
 	UIControl_Button m_buttons[REINSTALL_BUTTON_COUNT];
 	wstring m_playerNick;
+	bool m_bIgnoreInput;
 
 	void updatePlaceholderButtonLabel();
-	static int KeyboardCompleteCallback(LPVOID lpParam, bool bRes);
+	static int KeyboardCompleteCallback(LPVOID lpParam, const bool bRes);
 	void handleEditNamePressed();
 	UI_BEGIN_MAP_ELEMENTS_AND_NAMES(UIScene)
 		UI_MAP_ELEMENT( m_buttons[eControl_Theme], "Button1")

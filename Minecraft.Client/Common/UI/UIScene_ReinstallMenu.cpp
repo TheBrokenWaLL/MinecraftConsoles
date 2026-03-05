@@ -7,6 +7,7 @@ UIScene_ReinstallMenu::UIScene_ReinstallMenu(int iPad, void *initData, UILayer *
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
 
+	m_bIgnoreInput = false;
 	m_playerNick = ProfileManager.GetDisplayName(m_iPad);
 	m_buttons[eControl_Theme].init(m_playerNick, eControl_Theme);
 
@@ -44,9 +45,10 @@ void UIScene_ReinstallMenu::updatePlaceholderButtonLabel()
 	m_buttons[eControl_Theme].setLabel(m_playerNick);
 }
 
-int UIScene_ReinstallMenu::KeyboardCompleteCallback(LPVOID lpParam, bool bRes)
+int UIScene_ReinstallMenu::KeyboardCompleteCallback(LPVOID lpParam, const bool bRes)
 {
 	UIScene_ReinstallMenu *pClass = (UIScene_ReinstallMenu *)lpParam;
+	pClass->m_bIgnoreInput = false;
 	if (bRes)
 	{
 		uint16_t pchText[128];
@@ -86,6 +88,11 @@ void UIScene_ReinstallMenu::updateComponents()
 
 void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pressed, bool released, bool &handled)
 {
+	if(m_bIgnoreInput)
+	{
+		return;
+	}
+
 	//app.DebugPrintf("UIScene_DebugOverlay handling input for pad %d, key %d, down- %s, pressed- %s, released- %s\n", iPad, key, down?"TRUE":"FALSE", pressed?"TRUE":"FALSE", released?"TRUE":"FALSE");
 
 	ui.AnimateKeyPress(m_iPad, key, repeat, pressed, released);
@@ -112,8 +119,25 @@ void UIScene_ReinstallMenu::handleInput(int iPad, int key, bool repeat, bool pre
 
 void UIScene_ReinstallMenu::handleEditNamePressed()
 {
-	// Use the same world-rename style prompt title.
+	m_bIgnoreInput = true;
+
+#ifdef _XBOX_ONE
+	// 4J-PB - Match existing keyboard language handling used by other rename flows.
+	int language = XGetLanguage();
+	switch(language)
+	{
+	case XC_LANGUAGE_JAPANESE:
+	case XC_LANGUAGE_KOREAN:
+	case XC_LANGUAGE_TCHINESE:
+		InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+		break;
+	default:
+		InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Alphabet_Extended);
+		break;
+	}
+#else
 	InputManager.RequestKeyboard(app.GetString(IDS_RENAME_WORLD_TITLE), m_playerNick.c_str(), (DWORD)m_iPad, 25, &UIScene_ReinstallMenu::KeyboardCompleteCallback, this, C_4JInput::EKeyboardMode_Default);
+#endif
 }
 
 void UIScene_ReinstallMenu::handlePress(F64 controlId, F64 childId)
@@ -121,6 +145,7 @@ void UIScene_ReinstallMenu::handlePress(F64 controlId, F64 childId)
 	switch((int)controlId)
 	{
 	case eControl_Theme:
+		ui.PlayUISFX(eSFX_Press);
 		handleEditNamePressed();
 		break;
 	}
