@@ -5,6 +5,11 @@
 #include "MultiPlayerLocalPlayer.h"
 #include "UIScene_ReinstallMenu.h"
 
+#ifdef _WINDOWS64
+extern char g_Win64Username[17];
+extern wchar_t g_Win64UsernameW[17];
+#endif
+
 UIScene_ReinstallMenu::UIScene_ReinstallMenu(int iPad, void *initData, UILayer *parentLayer) : UIScene(iPad, parentLayer)
 {
 	// Setup all the Iggy references we need for this scene
@@ -67,6 +72,11 @@ int UIScene_ReinstallMenu::KeyboardCompleteCallback(LPVOID lpParam, const bool b
 			{
 				pMinecraft->user->name = pClass->m_playerNick;
 			}
+
+#ifdef _WINDOWS64
+			WideCharToMultiByte(CP_ACP, 0, pClass->m_playerNick.c_str(), -1, g_Win64Username, sizeof(g_Win64Username), NULL, NULL);
+			MultiByteToWideChar(CP_ACP, 0, g_Win64Username, -1, g_Win64UsernameW, 17);
+#endif
 
 			if(pClass->m_iPad >= 0 && pClass->m_iPad < XUSER_MAX_COUNT && pMinecraft->localplayers[pClass->m_iPad] != NULL)
 			{
