@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UI.h"
 #include "UIScene_SettingsOptionsMenu.h"
+#include "..\..\User.h"
+#include "..\..\MultiPlayerLocalPlayer.h"
 
 #if defined(_XBOX_ONE)
 #define _ENABLE_LANGUAGE_SELECT
@@ -26,6 +28,7 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 {
 	m_bNavigateToLanguageSelector = false;
 	m_bIgnoreInput = false;
+	ZeroMemory(m_wchPlayerNick, sizeof(m_wchPlayerNick));
 
 	// Setup all the Iggy references we need for this scene
 	initialiseMovie();
@@ -147,7 +150,7 @@ UIScene_SettingsOptionsMenu::UIScene_SettingsOptionsMenu(int iPad, void *initDat
 		m_buttonLanguageSelect.init(IDS_LANGUAGE_SELECTOR, eControl_Languages);
 	}
 #else
-	m_buttonLanguageSelect.init(UIString(L"Nick: " + Minecraft::GetInstance()->user->name), eControl_PlayerNick);
+	updatePlayerNickButtonLabel();
 #endif
 
 	doHorizontalResizeCheck();
@@ -250,7 +253,16 @@ void UIScene_SettingsOptionsMenu::handlePress(F64 controlId, F64 childId)
 	{
 	case eControl_PlayerNick:
 		m_bIgnoreInput = true;
-		InputManager.RequestKeyboard(L"Alterar nick", Minecraft::GetInstance()->user->name.c_str(), (DWORD)m_iPad, 20, &UIScene_SettingsOptionsMenu::KeyboardCompletePlayerNickCallback, this, C_4JInput::EKeyboardMode_Default);
+		if (Minecraft::GetInstance()->user != NULL)
+		{
+			wcsncpy_s(m_wchPlayerNick, Minecraft::GetInstance()->user->name.c_str(), _TRUNCATE);
+		}
+
+#if defined(_XBOX) || defined(_DURANGO)
+		InputManager.RequestKeyboard(IDS_TITLE_RENAME, m_wchPlayerNick, IDS_TITLE_RENAME, (DWORD)m_iPad, m_wchPlayerNick, 20, &UIScene_SettingsOptionsMenu::KeyboardCompletePlayerNickCallback, this, C_4JInput::EKeyboardMode_Default, app.GetStringTable());
+#else
+		InputManager.RequestKeyboard(app.GetString(IDS_TITLE_RENAME), m_wchPlayerNick, (DWORD)m_iPad, 20, &UIScene_SettingsOptionsMenu::KeyboardCompletePlayerNickCallback, this, C_4JInput::EKeyboardMode_Default);
+#endif
 		break;
 	case eControl_Languages:
 		m_bNavigateToLanguageSelector = true;
@@ -394,11 +406,15 @@ int UIScene_SettingsOptionsMenu::KeyboardCompletePlayerNickCallback(LPVOID lpPar
 		return 0;
 	}
 
+	wstring newNick;
+#if defined(_XBOX) || defined(_DURANGO)
+	newNick = pClass->m_wchPlayerNick;
+#else
 	uint16_t pchText[128];
 	ZeroMemory(pchText, 128 * sizeof(uint16_t));
 	InputManager.GetText(pchText);
-
-	wstring newNick = (wchar_t *)pchText;
+	newNick = (wchar_t *)pchText;
+#endif
 	if (newNick.empty())
 	{
 		return 0;
@@ -411,8 +427,10 @@ int UIScene_SettingsOptionsMenu::KeyboardCompletePlayerNickCallback(LPVOID lpPar
 
 void UIScene_SettingsOptionsMenu::updatePlayerNickButtonLabel()
 {
-	wstring nick = Minecraft::GetInstance()->user != NULL ? Minecraft::GetInstance()->user->name : L"";
-	m_buttonLanguageSelect.init(UIString(L"Nick: " + nick), eControl_PlayerNick);
+	wstring nick = (Minecraft::GetInstance()->user != NULL) ? Minecraft::GetInstance()->user->name : wstring();
+	wchar_t nickButtonLabel[256];
+	swprintf(nickButtonLabel, 256, L"Nick: %ls", nick.c_str());
+	m_buttonLanguageSelect.init(UIString(nickButtonLabel), eControl_PlayerNick);
 }
 
 void UIScene_SettingsOptionsMenu::applyPlayerNick(const wstring &newNick)

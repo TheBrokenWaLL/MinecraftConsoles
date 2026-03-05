@@ -43,6 +43,7 @@ private:
 	bool m_bMashUpWorldsUnhideOption;
 	bool m_bNavigateToLanguageSelector;
 	bool m_bIgnoreInput;
+	wchar_t m_wchPlayerNick[128];
 
 	void updatePlayerNickButtonLabel();
 	void applyPlayerNick(const wstring &newNick);
