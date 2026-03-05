@@ -3,6 +3,7 @@
 #include "UIScene_SettingsOptionsMenu.h"
 #include "..\..\User.h"
 #include "..\..\..\Minecraft.World\Player.h"
+#include "..\..\MultiPlayerLocalPlayer.h"
 
 #if defined(_WIN64)
 extern char g_Win64Username[17];
@@ -495,7 +496,6 @@ int UIScene_SettingsOptionsMenu::KeyboardCompleteNameCallback(LPVOID lpParam,con
 				{
 					minecraft->user->name = g_Win64UsernameW;
 				}
-
 				if (pClass->m_iPad >= 0)
 				{
 					size_t localPad = static_cast<size_t>(pClass->m_iPad);
@@ -507,6 +507,14 @@ int UIScene_SettingsOptionsMenu::KeyboardCompleteNameCallback(LPVOID lpParam,con
 							localPlayer->name = g_Win64UsernameW;
 							localPlayer->m_displayName = g_Win64UsernameW;
 						}
+				int localPad = pClass->m_iPad;
+				if (localPad >= 0 && localPad < XUSER_MAX_COUNT)
+				{
+					shared_ptr<MultiplayerLocalPlayer> localPlayer = minecraft->localplayers[localPad];
+					if (localPlayer != NULL)
+					{
+						localPlayer->name = g_Win64UsernameW;
+						localPlayer->m_displayName = g_Win64UsernameW;
 					}
 				}
 
